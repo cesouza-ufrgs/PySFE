@@ -11,3 +11,8 @@ The code is developed in Linux, and is meant to be run from command line:
 
 If everything goes well, an output file will be created for GMSH post-processing.
 
+### Examples
+Two examples can be found in folder 'models'. All keywords necessary to run a model are present in both files.
+
+
+
