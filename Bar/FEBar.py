@@ -1,39 +1,22 @@
 #!/usr/bin/env python3
 """
-@mainpage PyAeroSource
+@mainpage FEBar
 
-This is the main page of PyEolica.
+This is the main page for FEBar
 
 @section Goals
 
-Source sheet panel method
+A simple 2D bar finite element
 
 @section Todo
 
 @todo
- - 18.09.18 - everything, planning
+ - 19.04.11 - everything
 
 
 @section Teste
 
 
-@package PyEolica
-
-@author carlos eduardo de souza
-@date 18.09.18
-@version 18.09.19  start
-@version 14.02.01
-          Adicionei a plotagem da curva
-          Adicionado o vetor de velocidade
-
-@attention: esse arquivo ainda esta com muita cara de c++! Como usar comandos em python?
-@note
-    Esse programa deve se manter sem interface grafica.
-    Usar sempre o conceito: rodar sozinho!!!
-    Posteriomente, devo criar uma interface que chame as rotinas atuais.
-
-@note
-Para documentacao, ver o site <a href="http://notemagnet.blogspot.com.br/2009/10/using-doxypy-for-python-code.html">Using doxypy for Python code documentation </a>
 
 """
 
@@ -48,7 +31,7 @@ from math import radians #, pi, cos, sin, sqrt,
 
 # classes locais -------------
 from Data.class_data   import *
-from Util.utilidades import tela_regua, align_header
+from Util.utilities import align_header
 from math import atan2
 
 from Data.class_results import *
