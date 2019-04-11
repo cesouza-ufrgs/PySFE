@@ -30,7 +30,7 @@ def extrai_comando(linha):
         comando = linha[0:pos_virgula]
 
 
-        print 'comando: '+ comando    
+        print ('comando: '+ comando)    
 
     return comando
 
@@ -71,10 +71,10 @@ def separa_linha(linha):
             #print len(parametro)
             
             if len(parametro)<2:
-                print ' ATENCAO: \n' 
-                print '  erro no parametro'
-                print ' ver linha do comando ', comando
-                print ' ATENCAO!!!\n' 
+                print (' ATENCAO: \n') 
+                print ('  erro no parametro')
+                print (' ver linha do comando ' + comando)
+                print (' ATENCAO!!!\n' )
                 parametro = "  0   "
     
 
@@ -246,8 +246,8 @@ class C_Data():
         @param input_file - caminho para o input_file de dados.
         '''
         
-        print '_______________________________________________'
-        print '---- Main reading - input'
+        print ('_______________________________________________')
+        print ('---- Main reading - input')
         
         # separa o nome do input_file
         (diretorio, nome) = os.path.split(input_file)
@@ -257,10 +257,10 @@ class C_Data():
         
                        
         
-        print 'path:          ', diretorio
-        print 'file name:     ', nome
-        print 'file only:', filebase 
-        print 'file extension:', ext              
+        print ('path:          '+ diretorio)
+        print ('file name:     '+ nome)
+        print ('file only:     '+ filebase )
+        print ('file extension:'+ ext  )            
       
         self.input_file = input_file
         self.path       = diretorio
@@ -273,7 +273,7 @@ class C_Data():
             return
         
         
-        print "opening the file ", input_file, " for reading"
+        print ('opening  file ' +  input_file +  ' for reading')
         
           
         #--- inicia a leitura do input_file de dados
@@ -440,41 +440,34 @@ class C_Data():
                 # numero de diametros - cria um vetor de diametros-:
                 elif  card == "nodes" :  
                     
-                    read_nodes = True   
-                    print 'begin of nodes'
+                    read_nodes = True  
                     
                 elif  card == "elements" :  
                     
-                    read_elements = True   
-                    print 'begin of elements'
+                    read_elements = True
                     
                 elif  card == "materials" :  
                     
                     read_materials = True   
-                    print 'begin of materials'
          
                 elif  card == "sections" :  
                     
                     read_sections = True   
-                    print 'begin of sections'
-         
            
                 elif  card == "forces" :  
                     
                     read_forces = True   
-                    print 'begin of forces'
                     
                 elif  card == "bconditions" :  
                     
-                    read_bconditions = True   
-                    print 'begin of boundary conditions'
+                    read_bconditions = True
                  
                     
                     
         #--- verifying stuff            
         #mensagens:
-        print '* * * * * * * * * * * *'
-        print 'Reading completed.'
+        print ('* * * * * * * * * * * *')
+        print ('Reading completed.')
         
         
         self.n_nodes = len(self.nodes)
@@ -488,35 +481,35 @@ class C_Data():
         show_log = True           
         
         if show_log:
-            print 'Log:'
+            print ('Log:')
             #--------------            
-            print 'n_nodes', self.n_nodes
+            print ('n_nodes' , self.n_nodes)
             for n in self.nodes:
-                print n.id , n.coord
+                print (n.id , n.coord)
                 
                 
-            print 'n_elem', self.n_elem
+            print ('n_elem' , self.n_elem)
             for e in self.elements:
-                print e.id , e.prop, e.nodes
+                print (e.id , e.prop, e.nodes)
                 
                 
                 
-            print 'n_mat', self.n_mat
+            print ('n_mat' , self.n_mat)
             for m in self.materials:
-                print m.id , m.E, m.rho
+                print (m.id , m.E, m.rho)
             
                 
-            print 'n_mat', self.n_mat
+            print ('n_mat' ,  self.n_mat)
             for m in self.materials:
-                print m.id , m.E, m.rho
+                print (m.id , m.E, m.rho)
                 
-            print 'n_sec', self.n_sec
+            print ('n_sec' ,  self.n_sec)
             for m in self.sections:
-                print m.id , m.A, m.Ixx
+                print (m.id , m.A, m.Ixx)
         
         #self.v_ave = self.v_des / 1.4
         #--------------
 
-        print '---- end of reading'
-        print '_______________________________________________'
+        print ('---- end of reading')
+        print ('_______________________________________________')
         return

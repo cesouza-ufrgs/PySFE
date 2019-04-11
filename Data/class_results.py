@@ -3,7 +3,7 @@
  
 import sys, os, codecs , fileinput
 
-from class_data import *
+from Data.class_data import *
 
 # casse Resultados - parametros calculados e que devem ser salvos. 
 class C_Results():
@@ -34,7 +34,7 @@ class C_Results():
         funcao para salvar parametros calculados em um arquivo.    
         '''
     
-        print 'arquivo input: ', path, filebase
+        print ('arquivo input: ' +  path + ' \ ' + filebase)
         #fi = open(arquivo_input, 'r');
        
         n_n = len(nodes)
@@ -43,7 +43,7 @@ class C_Results():
         file_out_gmsh = path + '/' + filebase + '_gmsh.msh'
         
         
-        print file_out_gmsh
+        print (file_out_gmsh)
         
         fout = open(file_out_gmsh, 'w')
     

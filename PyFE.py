@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 """
 @mainpage PyFE
 
@@ -89,16 +89,16 @@ def calcula_vento(dados):
 if __name__ == '__main__':
     
     '''
-    @brief porta de entrada do programa
-    @date 18.09.18
+    @brief program entry. The specific code is selected from the inputfile.
+    @date 19.04.11
        
     '''
-    print '\n\n\n'   
+    print ('\n\n\n')   
     tela_regua()    
-    print '$                   PyFE                      $'  
-    print '$                  v 19.04                    $'  
+    print ('$                   PyFE                      $')  
+    print ('$                  v 19.04                    $') 
     tela_regua()     
-    print '$  a simplified finite element code           $'
+    print ('$  a simplified finite element code           $')
     tela_regua()
     #print sys.argv
     
@@ -114,8 +114,8 @@ if __name__ == '__main__':
         inputfile = sys.argv[1]  
                 
         tela_regua()
-        print 'A FAZER: \n'
-        print ' 19.04.10 - everything'
+        print ('A FAZER: \n')
+        print (' 19.04.10 - everything')
         #desenha_grafico()                   
         tela_regua()
         
@@ -134,11 +134,11 @@ if __name__ == '__main__':
         
         
     else:
-        print '\n**********************************\n'
-        print 'O programa PyEolica exige a definicao de um arquivo de entrada de dados'
-        print 'Execute fazendo: >>./PyEolica.py arquivo.dat'
-        print '\n saindo \n '
-        print '\n**********************************\n'
+        print ('\n**********************************\n')
+        print ('O programa PyEolica exige a definicao de um arquivo de entrada de dados')
+        print ('Execute fazendo: >>./PyEolica.py arquivo.dat')
+        print ('\n saindo \n ')
+        print ('\n**********************************\n')
             
 
-    print '\n**********************************\n'
+    print ('\n**********************************\n')

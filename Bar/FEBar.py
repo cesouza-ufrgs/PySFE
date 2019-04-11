@@ -1,22 +1,39 @@
 #!/usr/bin/env python3
 """
-@mainpage FEBar
+@mainpage PyAeroSource
 
-This is the main page for FEBar
+This is the main page of PyEolica.
 
 @section Goals
 
-A simple 2D bar finite element
+Source sheet panel method
 
 @section Todo
 
 @todo
- - 19.04.11 - everything
+ - 18.09.18 - everything, planning
 
 
 @section Teste
 
 
+@package PyEolica
+
+@author carlos eduardo de souza
+@date 18.09.18
+@version 18.09.19  start
+@version 14.02.01
+          Adicionei a plotagem da curva
+          Adicionado o vetor de velocidade
+
+@attention: esse arquivo ainda esta com muita cara de c++! Como usar comandos em python?
+@note
+    Esse programa deve se manter sem interface grafica.
+    Usar sempre o conceito: rodar sozinho!!!
+    Posteriomente, devo criar uma interface que chame as rotinas atuais.
+
+@note
+Para documentacao, ver o site <a href="http://notemagnet.blogspot.com.br/2009/10/using-doxypy-for-python-code.html">Using doxypy for Python code documentation </a>
 
 """
 
@@ -67,17 +84,17 @@ def rotation_matrix_bar(cs,ss ):
 def FEBar(data):
     
     
-    print '* * * * '
-    print '\n**********************************\n'
-    print 'computing static finite element solution using a bar element'
-    print '\n**********************************\n'
+    print ('* * * * ')
+    print ('\n**********************************\n')
+    print ('computing static finite element solution using a bar element')
+    print ('\n**********************************\n')
     
     
     
     
     total_dof = data.ndof* data.n_nodes
     
-    print 'loop in the elements'
+    print ('loop on  elements')
     
     
     K_gl = np.zeros((total_dof,total_dof))
@@ -146,7 +163,7 @@ def FEBar(data):
     #print K_gl    
     
     # apply boundary cc
-    print 'apply boundary condition'
+    print ('apply boundary condition')
     for bc in data.bconditions:
         
         dofbc =  (bc.id -1)*data.ndof + bc.dir -1;
@@ -159,7 +176,7 @@ def FEBar(data):
         
         
     # force vector
-    print 'assemble the force vector'
+    print ('assemble the force vector')
     f_gl = np.zeros((total_dof,1))
     
     for force in data.forces:
@@ -172,15 +189,17 @@ def FEBar(data):
     #print K_gl  
     #print f_gl  
     
-    print 'solve the linear system, K.q = f'
+    print ('solve the linear system, K.q = f')
     u_gl =  solve(K_gl, f_gl)
     
     # print u_gl
     
     #-------------------------
-    # pos-processamento
+    # pos-processing
     u_nodal  = np.zeros((data.n_nodes,2))   
     
+    
+    print(' Displacement results:')
     header = 'i'.rjust(4) + '|'
     header+= align_header('u_1',13)
     header+= align_header('u_2',13)
