@@ -6,5 +6,8 @@ The code was initially created for Octave, during the classes of course DEM1091 
 In 2019, the code was translated to Python, but now using gmsh as post-processor. The initial version contains only a 2d bar finite element, but soon more codes will be uploaded.
 
 ## Usage
-The code is developed in Linux, and is meant to run from command line:
->>./PyFE.py <input_file>
+The code is developed in Linux, and is meant to be run from command line:
+>>./PyFE.py <path-to-file/input_file>
+
+If everything goes well, an output file will be created for GMSH post-processing.
+
