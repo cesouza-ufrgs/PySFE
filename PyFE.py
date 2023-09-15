@@ -49,9 +49,6 @@ from math import pi,atan,log
 
 # classes locais -------------
 from Data.class_data   import *
-#from Cargas.calcula_cargas   import *
-#from BEM.calcula_bem   import *
-# from ClassesGlobais.class_resultados import *
 from Graphics.graphics import *
 from Util.utilities import *
 
