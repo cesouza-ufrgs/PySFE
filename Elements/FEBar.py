@@ -52,13 +52,10 @@ from Data.class_results import *
     
 
 def compute_K_bar(A,E,L ):
-    
-    
         
     K_elem_bar = np.matrix([[1,-1],[-1,1]])
     
     K_elem_bar *= (A*E/L)
-   
 
     return K_elem_bar
 
