@@ -10,9 +10,6 @@ def tela_regua():
     print ('_______________________________________________')
     return
 
-
-
-
 def calc_v_res(v_a,v_b):
     
     
@@ -20,7 +17,6 @@ def calc_v_res(v_a,v_b):
 
 
 def align_header(text,leng):
-    
     
     
     return text.center(leng)+ '|' 

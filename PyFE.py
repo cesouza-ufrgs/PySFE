@@ -49,37 +49,15 @@ from math import pi,atan,log
 
 # classes locais -------------
 from Data.class_data   import *
-from Graphics.graphics import *
+# from Graphics.graphics import *
 from Util.utilities import *
 
 
-from Bar.FEBar import *
+from Elements.FEBar import *
 #------------------------------------------------------------------------------|
 #------------------------------------------------------------------------------|
 
-
-
-
  
-#--- calcula vento--------------------------------------------------------------
- 
-def calcula_vento(dados):
-    '''
-    @summary  calcula velocidade de vento necessaria para atender a potencia 
-              requerida e dimensoes
-              
-              
-    @version  14.02.22 
-    
-    @todo    Tudo.
- 
-    @param dados: class C_Dados input data structure
-    '''
-     
-     
-    return
-
-
 
     
 #--- main ----------------------------------------------------------------------
@@ -124,15 +102,16 @@ if __name__ == '__main__':
         
         if data.analysis == 'static':
             
-            if 'bar' in data.elemtype:
-                FEBar(data)
+            if 'bar2d' in data.elemtype:
+                FEBar2d(data)
         
         
         
         
     else:
         print ('\n**********************************\n')
-        print ('O programa PyEolica exige a definicao de um arquivo de entrada de dados')
+        print ('O programa PyFE exige a definicao de ') 
+        print ('um  arquivo de entrada de dados.')
         print ('Execute fazendo: >>./PyEolica.py arquivo.dat')
         print ('\n saindo \n ')
         print ('\n**********************************\n')

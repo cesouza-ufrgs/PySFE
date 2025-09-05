@@ -26,6 +26,7 @@ class C_Results():
         
         self.S = []
         
+        self.epsilon = []
         
         return
         

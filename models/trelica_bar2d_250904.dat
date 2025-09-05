@@ -1,6 +1,6 @@
 analysis, static
 ndof, 2
-elemtype,bar
+elemtype,bar2d
 plotfactor, 1e5
 nodes
 1,   0.0,  0.0,  0.0
@@ -10,7 +10,7 @@ nodes
 end
 
 elements
- 1,    1, 1,    2  
+ 1,    1, 1,    2
  2,    1, 2,    4  
  3,    1, 4,    3  
  4,    2, 4,    1  

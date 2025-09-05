@@ -276,7 +276,7 @@ def FEBar2d(data):
         epsilon = (Lef-Le)/Le
         sigma = E * epsilon
         
-        Results.eps.append(epsilon)
+        Results.epsilon.append(epsilon)
         
         Results.S.append(sigma/1e6)
         
@@ -475,7 +475,7 @@ def FEBar3d(data):
         epsilon = (Lef-Le)/Le
         sigma = E * epsilon
         
-        Results.eps.append(epsilon)
+        Results.epsilon.append(epsilon)
         
         Results.S.append(sigma/1e6)
         

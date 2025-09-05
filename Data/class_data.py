@@ -291,6 +291,8 @@ class C_Data():
             read_sections = False
             read_bconditions = False
             read_forces = False
+
+            current_element = None
             
          
             for in_line in fileobject:  
@@ -320,6 +322,8 @@ class C_Data():
                 if read_elements:
                     #print 'reading elements'
                     
+
+
                     cmds = le_comando(in_line)
                         
                         
@@ -436,8 +440,7 @@ class C_Data():
                 if "elemtype" in card:                     
                     self.elemtype = card_line[1]
                        
-                #---- -FE -----       
-                # numero de diametros - cria um vetor de diametros-:
+                #---- -FE -----        
                 elif  card == "nodes" :  
                     
                     read_nodes = True  
