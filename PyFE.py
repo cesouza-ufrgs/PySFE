@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
+
+__doc__ = """This will appear as doc level comments in the sphinx output."""
+
 """
+
+@package docstring
+
 @mainpage PyFE
 
 This is the main page of PyFE - a Python code for Finite Element teaching. 
@@ -8,9 +14,16 @@ This is the main page of PyFE - a Python code for Finite Element teaching.
 
 initially, only bar and beam models
 
+Implementing plane4 
+
+@section Remarks
+
+This 
+
 @section Todo
 
 @todo
+ - 25.09.12 - implement plane 4
  - 19.04.10 - everythinh
 
 
@@ -58,16 +71,16 @@ from Elements.FEBar import *
 #------------------------------------------------------------------------------|
 
  
-
+SECTION_A = "SECTION A"
     
 #--- main ----------------------------------------------------------------------
 if __name__ == '__main__':
     
-    '''
+    """
     @brief program entry. The specific code is selected from the inputfile.
     @date 19.04.11
        
-    '''
+    """
     print ('\n\n\n')   
     tela_regua()    
     print ('$                   PyFE                      $')  
