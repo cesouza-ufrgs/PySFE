@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 
-__doc__ = """This will appear as doc level comments in the sphinx output."""
 
 """
 
@@ -67,16 +66,17 @@ from Util.utilities import *
 
 
 from Elements.FEBar import *
+from Elements.FEPlane4 import *
 #------------------------------------------------------------------------------|
 #------------------------------------------------------------------------------|
 
- 
-SECTION_A = "SECTION A"
+  
     
 #--- main ----------------------------------------------------------------------
 if __name__ == '__main__':
     
     """
+    @package 
     @brief program entry. The specific code is selected from the inputfile.
     @date 19.04.11
        
@@ -117,6 +117,10 @@ if __name__ == '__main__':
             
             if 'bar2d' in data.elemtype:
                 FEBar2d(data)
+        
+        
+            if 'plane4' in data.elemtype:
+                FEPlane4(data)
         
         
         

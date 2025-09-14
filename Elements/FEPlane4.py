@@ -30,7 +30,7 @@ import sys  # os, codecs , fileinput
 import numpy as np
 
 from numpy.linalg import norm, solve, det,inv
-from math import radians #, pi, cos, sin, sqrt,
+from math import sqrt #, pi, cos, sin, sqrt,
 
 
 # classes locais -------------
@@ -39,48 +39,56 @@ from Util.utilities import align_header
 from math import atan2
 
 from Data.class_results import *
+ 
 
-dphi1_dxi1 = -1.;
-dphi2_dxi1 =  1.; 
-dphi3_dxi1 =  0.;
-dphi1_dxi2 = -1.;
-dphi2_dxi2 =  0.;
-dphi3_dxi2 =  1.;
+dXdx = np.zeros((2,2))
+phi  = np.zeros((4,1))
+dphidxi = np.zeros((4,2))
+u_e = np.zeros((8,1))
+
+weight =  [1., 1., 1., 1.]     
+B = np.zeros((3,8))
+pg = sqrt(3)/3.
+
+xi = np.array([[-pg, -pg],
+               [ pg, -pg],
+               [ pg,  pg],
+               [-pg,  pg]])
    
-
-
-
-
-
-def compute_Jac_plane4(xI,dphi_dxi1,dphi_dxi2):
-
-    print('computing Jacobian')
-    print(x1,x2,x3)
+n_gauss = 4
+     
+   
+def compute_gauss(r,s):
     
-    Jac=np.zeros((2,2));
-    
-    
-    for I in range(0,4):
-       
-        Jac[0,0] += dphi_dxi1[I] * xI[0] + dphi2_dxi1*x2[0] + dphi3_dxi1*x3[0]
-        Jac[0,1] += dphi_dxi1[I] * x1[1] + dphi2_dxi1*x2[1] + dphi3_dxi1*x3[1]
-      
-        Jac[1,0] = dphi1_dxi2 * x1[0] + dphi2_dxi2*x2[0] + dphi3_dxi2*x3[0]
-        Jac[1,1] = dphi1_dxi2 * x1[1] + dphi2_dxi2*x2[1] + dphi3_dxi2*x3[1]          
-    
-    return Jac
-    
-def compute_B_plane4(invJ):
+    phi[0] = .25*(1.-r)*(1.-s)
+    phi[1] = .25*(1.+r)*(1.-s)
+    phi[2] = .25*(1.+r)*(1.+s)    
+    phi[3] = .25*(1.-r)*(1.+s)
 
-    B = np.zeros((3,6))
+    dphidxi[0,0] = -.25*(1-s)
+    dphidxi[1,0] =  .25*(1-s)
+    dphidxi[2,0] =  .25*(1+s)
+    dphidxi[3,0] = -.25*(1+s)
     
-    B[0,0] = dphi1_dxi1 * invJ[0,0] + dphi1_dxi2 * invJ[0,1];
-    B[0,2] = dphi2_dxi1 * invJ[0,0] + dphi2_dxi2 * invJ[0,1];
-    B[0,4] = dphi3_dxi1 * invJ[0,0] + dphi3_dxi2 * invJ[0,1];      
+    dphidxi[0,1] = -.25*(1-r)
+    dphidxi[1,1] = -.25*(1+r)
+    dphidxi[2,1] =  .25*(1+r)
+    dphidxi[3,1] =  .25*(1-r)
+
     
-    B[1,1] = dphi1_dxi1 * invJ[1,0] + dphi1_dxi2 * invJ[1,1];
-    B[1,3] = dphi2_dxi1 * invJ[1,0] + dphi2_dxi2 * invJ[1,1];
-    B[1,5] = dphi3_dxi1 * invJ[1,0] + dphi3_dxi2 * invJ[1,1];
+def update_B_plane4(dXdx):
+
+    dxdX = np.linalg.inv(dXdx)    
+
+    B[0,0] = dphidxi[0,0] * dxdX[0,0] + dphidxi[0,1] * dxdX[0,1]
+    B[0,2] = dphidxi[1,0] * dxdX[0,0] + dphidxi[1,1] * dxdX[0,1]
+    B[0,4] = dphidxi[2,0] * dxdX[0,0] + dphidxi[2,1] * dxdX[0,1]
+    B[0,6] = dphidxi[3,0] * dxdX[0,0] + dphidxi[3,1] * dxdX[0,1]
+    
+    B[1,1] = dphidxi[0,0] * dxdX[1,0] + dphidxi[0,1] * dxdX[1,1]
+    B[1,3] = dphidxi[1,0] * dxdX[1,0] + dphidxi[1,1] * dxdX[1,1]
+    B[1,5] = dphidxi[2,0] * dxdX[1,0] + dphidxi[2,1] * dxdX[1,1]
+    B[1,7] = dphidxi[3,0] * dxdX[1,0] + dphidxi[3,1] * dxdX[1,1]    
     
     B[2,0] = B[1,1]
     B[2,1] = B[0,0]
@@ -88,49 +96,71 @@ def compute_B_plane4(invJ):
     B[2,3] = B[0,2]
     B[2,4] = B[1,5]
     B[2,5] = B[0,4]   
-    
-    return B
-
-
-def compute_K_plane4(x1,x2,x3,h,E,nu):
-
-    
-    n_gauss = 4
-    w =  [1., 1., 1., 1.]      
+    B[2,6] = B[1,7]   
+    B[2,7] = B[0,6]     
     
 
-    K_e = np.zeros((6,6));
+
+
+def compute_K_plane4(X,e,E,nu):
+    """
+    Computes the stiffness matrix for the plane4 element
+
+    Taylor element, bi-linear
+    """
+    # gaus points coordinates
+
+    
+
+    K_e = np.zeros((8,8));
    
     C = np.matrix([ [ 1.,   nu,   0.],
                     [ nu,   1.,   0. ],
                     [ 0.,   0.,   (1.-nu)/2.]])
    
     C *= E /(1.-nu*nu) 
-              
-    Jac = compute_Jac_plane3(x1, x2, x3)
-    invJ = inv(Jac)
-    detJ = det(Jac)
+                       
+    print('Constitutive matrix')    
+    print(C)                  
+
     
-    print('Jacobian')
-    print(Jac)
-    print(invJ)
     
-    B = compute_B_plane3(invJ)
-    
-    CB = np.dot(C,  B)
-    BT = B.transpose()
    
     for i_g in range(0,n_gauss):
-   
-        #print('cb\n',CB)
+    
+        print('gauss point')
+        print(xi[i_g,:])
+        # update phi and dphidxi
+        compute_gauss(xi[i_g,0],xi[i_g,1]  )
+
+        print(dphidxi)
+
+        # compute dXdx - deformation gradient
+        dXdx[0,0] = np.dot(dphidxi[:,0], X[:,0])
+        dXdx[0,1] = np.dot(dphidxi[:,1], X[:,0])
+        dXdx[1,0] = np.dot(dphidxi[:,0], X[:,1])
+        dXdx[1,1] = np.dot(dphidxi[:,1], X[:,1])
+
+        # jacobian
+        Jac = np.linalg.det(dXdx)
+
+        print('F\n',dXdx)
+        print('Jacobian', Jac)
+
+        update_B_plane4(dXdx)
+        print(B)
+
+        CB = np.dot(C,  B)
+        BT = B.transpose()
+        print('cb\n',CB)
         #print('bt\n',BT)
-        K_e += h * w[i_g] * detJ * np.dot(BT,CB) 
+        K_e += e * weight[i_g] * Jac * np.dot(BT,CB) 
         
-    print('K_e computed')
+    print('K_e computed\n', K_e)
     
     return K_e
-    
-
+#---------------------------------------------------------------    
+#---------------------------------------------------------------
 '''
 
  main code for the plane3 element
@@ -139,13 +169,13 @@ def compute_K_plane4(x1,x2,x3,h,E,nu):
 
 '''
 
-def FEPlane3(data):
+def FEPlane4(data):
     
     
     print ('* * * * ')
     print ('\n*************************************\n')
     print ('computing static finite element        ') 
-    print ('solution using a 2d - 3n plane element ')
+    print ('solution using a 2d - 4n plane element ')
     print ('\n*************************************\n')
     
     total_dof = data.ndof * data.n_nodes
@@ -153,34 +183,36 @@ def FEPlane3(data):
     print ('loop on  elements')
     
     K_gl = np.zeros((total_dof,total_dof))
-    
+
+
+    X = np.zeros((4,2))
+
+ 
     for i in range (0,data.n_elem):
         print('element', i)
         
         n1 = data.elements[i].nodes[0]
         n2 = data.elements[i].nodes[1]
         n3 = data.elements[i].nodes[2]
-        
-        print(n1,n2,n3)
-        
-        x1 = data.nodes[n1-1].coord
-        x2 = data.nodes[n2-1].coord
-        x3 = data.nodes[n3-1].coord
+        n4 = data.elements[i].nodes[3]
+          
+        X[0,0:2] =data.nodes[n1-1].coord[0:2]
+        X[1,0:2] =data.nodes[n2-1].coord[0:2]
+        X[2,0:2] =data.nodes[n3-1].coord[0:2]
+        X[3,0:2] =data.nodes[n4-1].coord[0:2]
         
         # geometry
         i_prop = data.elements[i].prop
         #Area = data.sections[i_prop-1].A
-        h = data.sections[i_prop-1].h
+        e = data.sections[i_prop-1].e
         
         # material
         i_mat = data.sections[i_prop-1].imat
         E  = data.materials[i_mat-1].E
         nu = data.materials[i_mat-1].nu
         
-        K_e_gl = compute_K_plane3(x1,x2,x3, h, E, nu)
-        
-        print (x1,x2,x3,h,E,nu)
-        # print (K_e_gl)      
+        #---- ------------------------------------  
+        K_e_gl = compute_K_plane4(X, e, E, nu)        
         
         #---- ------------------------------------     
         # global stiffness matrix superposition
@@ -189,11 +221,16 @@ def FEPlane3(data):
         K11 = K_e_gl[0:2,0:2]
         K12 = K_e_gl[0:2,2:4]
         K13 = K_e_gl[0:2,4:6]
+        K14 = K_e_gl[0:2,6:8]
         
         K22 = K_e_gl[2:4,2:4]
-        K23 = K_e_gl[2:4,4:6]        
+        K23 = K_e_gl[2:4,4:6]
+        K24 = K_e_gl[2:4,6:8]       
         
-        K33 = K_e_gl[4:6,4:6]        
+        K33 = K_e_gl[4:6,4:6] 
+        K34 = K_e_gl[4:6,6:8]  
+
+        K44 = K_e_gl[6:8,6:8]          
     
         # o numero de graus de liberdade.
         i1_i  = (n1-1)*data.ndof + 0;  
@@ -202,21 +239,32 @@ def FEPlane3(data):
         i2_f  = (n2-1)*data.ndof + 1;
         i3_i  = (n3-1)*data.ndof + 0; 
         i3_f  = (n3-1)*data.ndof + 1;
+        i4_i  = (n4-1)*data.ndof + 0; 
+        i4_f  = (n4-1)*data.ndof + 1;
        
         # 1 1 
         K_gl[i1_i:i1_f+1,i1_i:i1_f+1] += K11;
         K_gl[i1_i:i1_f+1,i2_i:i2_f+1] += K12;
         K_gl[i1_i:i1_f+1,i3_i:i3_f+1] += K13;
+        K_gl[i1_i:i1_f+1,i4_i:i4_f+1] += K14;
 
         # 2 1
         K_gl[i2_i:i2_f+1,i1_i:i1_f+1] += K12.transpose();
         K_gl[i2_i:i2_f+1,i2_i:i2_f+1] += K22;
         K_gl[i2_i:i2_f+1,i3_i:i3_f+1] += K23;
+        K_gl[i2_i:i2_f+1,i4_i:i4_f+1] += K24;
    
         # 2 1
         K_gl[i3_i:i3_f+1,i1_i:i1_f+1] += K13.transpose();
         K_gl[i3_i:i3_f+1,i2_i:i2_f+1] += K23.transpose();
         K_gl[i3_i:i3_f+1,i3_i:i3_f+1] += K33;
+        K_gl[i3_i:i3_f+1,i4_i:i4_f+1] += K34;    
+
+        # 2 2
+        K_gl[i4_i:i4_f+1,i1_i:i1_f+1] += K14.transpose();
+        K_gl[i4_i:i4_f+1,i2_i:i2_f+1] += K24.transpose();
+        K_gl[i4_i:i4_f+1,i3_i:i3_f+1] += K34.transpose();
+        K_gl[i4_i:i4_f+1,i4_i:i4_f+1] += K44;
                
         #-- end of elements loop
         
@@ -248,7 +296,9 @@ def FEPlane3(data):
     print ('solve the linear system, K.q = f')
     u_gl =  solve(K_gl, f_gl)
     
-    # print u_gl
+    print(u_gl)
+
+    print('Solution obtained!')
     
     #-------------------------
     #--- pos-processing
@@ -291,47 +341,43 @@ def FEPlane3(data):
     print( header) 
     for i in range (0,data.n_elem):
         print('element', i)
-        
+         
         n1 = data.elements[i].nodes[0]
         n2 = data.elements[i].nodes[1]
         n3 = data.elements[i].nodes[2]
+        n4 = data.elements[i].nodes[3]
+          
+        X[0,0:2] =data.nodes[n1-1].coord[0:2]
+        X[1,0:2] =data.nodes[n2-1].coord[0:2]
+        X[2,0:2] =data.nodes[n3-1].coord[0:2]
+        X[3,0:2] =data.nodes[n4-1].coord[0:2]
         
-        print(n1,n2,n3)
-        
-        x1 = data.nodes[n1-1].coord
-        x2 = data.nodes[n2-1].coord
-        x3 = data.nodes[n3-1].coord
-        
-        
-        print(n1,n2,n3)
-        print(x1,x2,x3)
         # geometry
         i_prop = data.elements[i].prop
-        h = data.sections[i_prop-1].h
+        #Area = data.sections[i_prop-1].A
+        e = data.sections[i_prop-1].e
         
         # material
         i_mat = data.sections[i_prop-1].imat
-        E  = data.materials[i_mat-1].E    
-        nu = data.materials[i_mat-1].nu
+        E  = data.materials[i_mat-1].E
+        nu = data.materials[i_mat-1].nu        
         
-        
+   
         C = np.matrix([ [ 1.,   nu,   0.],
                         [ nu,   1.,   0. ],
                         [ 0.,   0.,   (1.-nu)/2.]])
-         
+    
         C *= E /(1.-nu*nu) 
-        
-        Jac = compute_Jac_plane3(x1, x2, x3)
-        
-        print('Jacobian')
-        print(Jac)
-        invJ = inv(Jac)
-        detJ = det(Jac)
-      
-        print('Jacobian')
-        print(invJ)
-      
-        B = compute_B_plane3(invJ)
+                        
+         
+        # compute dXdx - deformation gradient
+        dXdx[0,0] = np.dot(dphidxi[:,0], X[:,0])
+        dXdx[0,1] = np.dot(dphidxi[:,1], X[:,0])
+        dXdx[1,0] = np.dot(dphidxi[:,0], X[:,1])
+        dXdx[1,1] = np.dot(dphidxi[:,1], X[:,1])
+
+     
+        update_B_plane4(dXdx)
         
         # u element
         i1_i  = (n1-1)*data.ndof + 0;  
@@ -340,18 +386,23 @@ def FEPlane3(data):
         i2_f  = (n2-1)*data.ndof + 1;
         i3_i  = (n3-1)*data.ndof + 0; 
         i3_f  = (n3-1)*data.ndof + 1;
+        i4_i  = (n4-1)*data.ndof + 0; 
+        i4_f  = (n4-1)*data.ndof + 1;
        
-        u_e = np.zeros((3*data.ndof,1))
         
         u_e [0:2,0] = u_gl[i1_i:i1_f+1,0];
         u_e [2:4,0] = u_gl[i2_i:i2_f+1,0];
         u_e [4:6,0] = u_gl[i3_i:i3_f+1,0];
+        u_e [6:8,0] = u_gl[i4_i:i4_f+1,0];
         
         epsilon = np.dot(B,u_e)
         
         sigma = np.dot(C , epsilon)
+
+        print(epsilon)
+        print(sigma/1e6)
         
-        Results.eps.append(epsilon)
+        Results.strn.append(epsilon)
         
         Results.S.append(sigma/1e6)
         

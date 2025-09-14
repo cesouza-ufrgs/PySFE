@@ -26,11 +26,11 @@ class C_Results():
         
         self.S = []
         
-        self.epsilon = []
+        self.strn = []
         
         return
         
-    def save_to_gmsh(self,path,filebase,nodes,elements):  
+    def save_to_gmsh(self,path,filebase,nodes,elements,elemtype):  
         '''
         funcao para salvar parametros calculados em um arquivo.    
         '''
@@ -53,7 +53,21 @@ class C_Results():
         fout.write('2.2 0 4\n')    
         fout.write('$EndMeshFormat\n')  
             
-      
+        if elemtype == 'bar2d':
+            self.save_to_gmsh_bar2d(fout,n_n,nodes,n_e,elements)
+        elif   elemtype == 'plane4':    
+            self.save_to_gmsh_plane4(fout,n_n,nodes,n_e,elements)      
+        
+        # ----------------------------------------      
+        fout.close()    
+    
+        return
+    
+    
+    
+    def save_to_gmsh_bar2d(self,fout,n_n,nodes,n_e,elements):  
+    
+    
         #--- write nodes
         fout.write('$Nodes\n')  
         
@@ -122,13 +136,78 @@ class C_Results():
             fout.write(linha+'\n')
       
         fout.write('$EndNodeData\n')  
+
+
+    def save_to_gmsh_plane4(self,fout,n_n,nodes,n_e,elements):  
+    
+    
+        #--- write nodes
+        fout.write('$Nodes\n')  
         
-        # ----------------------------------------      
-        fout.close()    
-    
-        return
-    
-    
-    
-    
-    
+        #linha = str("%5d  \n" % n_n)        
+        fout.write(str("%5d  \n" % n_n))
+        
+        for no in nodes:
+            
+            linha = str("%5d  " % no.id)
+            linha += str('%2.8f '  % no.coord[0])         
+            linha += str('%2.8f '  % no.coord[1])
+            linha += str('%2.8f '  % no.coord[2])
+        
+            fout.write(linha+'\n')
+       
+        fout.write('$EndNodes\n')  
+        
+        #--- write elements
+        
+        fout.write('$Elements\n')  
+            
+        fout.write(str("%5d  \n" % n_e))
+        
+        for el in elements:
+            
+            linha = str("%5d  3 2 1 1" % el.id)                
+        
+            linha += str('%5d '  % el.nodes[0])         
+            linha += str('%5d '  % el.nodes[1])       
+            linha += str('%5d '  % el.nodes[2])       
+            linha += str('%5d '  % el.nodes[3])
+        
+            fout.write(linha+'\n')
+       
+        fout.write('$EndElements\n')  
+        
+        #--- write displacements
+        '''
+        $NodeData
+          numStringTags(ASCII int)
+          stringTag(string) ...
+          numRealTags(ASCII int)
+          realTag(ASCII double) ...
+          numIntegerTags(ASCII int)
+          integerTag(ASCII int) ...
+          nodeTag(size_t) value(double) ...
+          ...
+        $EndNodeData
+        '''
+        fout.write('$NodeData\n')
+        fout.write('1\n')     # number-of-string-tags 
+        fout.write('\"u\"\n')   # name
+        fout.write('1\n')     # number-of-real-tags
+        fout.write('0.0\n')    # real - time value, por ex.
+        fout.write('3\n')    # number of integer tags
+        fout.write('1\n')
+        fout.write('3\n')
+        fout.write(str("%5d  \n" % n_n)) # number of nodes with results
+        
+        
+        
+        for i in range(0, n_n):
+            
+            linha = str('%5d  ' % (i+1))
+            linha += str('%12.8f '  % self.u_global[i,0])         
+            linha += str('%12.8f '  % self.u_global[i,1])      
+            linha += str('%12.8f '  % 0.0)
+            fout.write(linha+'\n')
+      
+        fout.write('$EndNodeData\n')  

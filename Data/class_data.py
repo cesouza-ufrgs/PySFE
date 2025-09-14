@@ -161,7 +161,9 @@ class C_Sections():
         
         self.Iyy = 0.
 
-        self.J0 = 0.       
+        self.J0 = 0.    
+
+        self.e = 0.   
   
 
 class C_Forces():
@@ -217,6 +219,7 @@ class C_Data():
         self.elements = []
         self.materials = []
         self.sections = []
+        self.section2d = []
         
         self.forces = []
         self.bconditions = []
@@ -289,6 +292,8 @@ class C_Data():
             read_elements = False
             read_materials = False
             read_sections = False
+            read_section2d = False
+            read_section3d = False
             read_bconditions = False
             read_forces = False
 
@@ -381,6 +386,23 @@ class C_Data():
                         if len(cmds)>5:
                             sec.J0    = float(cmds[5])                       
                                                 
+                        self.sections.append(sec)                           
+                #-----    read sections
+                if read_section2d:
+
+                    print('reading section2d for plane elements ')
+                    
+                    cmds = le_comando(in_line)
+                        
+                    if "end" in cmds[0]:
+                        read_section2d = False
+                    else:                         
+                        sec = C_Sections()                       
+                             
+                        sec.id    = int(cmds[0])
+                        sec.imat  = int(cmds[1])
+                        sec.e     = float(cmds[2])                      
+                                                
                         self.sections.append(sec)  
                         
                 #-----    read forces
@@ -456,6 +478,11 @@ class C_Data():
                 elif  card == "sections" :  
                     
                     read_sections = True   
+
+                elif  card == "section2d" :  
+                    
+                    read_section2d = True  
+           
            
                 elif  card == "forces" :  
                     
@@ -479,7 +506,6 @@ class C_Data():
         self.n_sec = len(self.sections)
         self.n_forces = len(self.forces)
         self.n_bconditions = len(self.bconditions)
-
         
         show_log = True           
         
@@ -493,8 +519,7 @@ class C_Data():
                 
             print ('n_elem' , self.n_elem)
             for e in self.elements:
-                print (e.id , e.prop, e.nodes)
-                
+                print (e.id , e.prop, e.nodes)                
                 
                 
             print ('n_mat' , self.n_mat)
@@ -507,8 +532,9 @@ class C_Data():
                 print (m.id , m.E, m.rho)
                 
             print ('n_sec' ,  self.n_sec)
-            for m in self.sections:
-                print (m.id , m.A, m.Ixx)
+            for s in self.sections:
+                print (s.id , s.A, s.Ixx, s.e)
+
         
         #self.v_ave = self.v_des / 1.4
         #--------------
