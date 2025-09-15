@@ -54,6 +54,7 @@ B = np.zeros((3,8))
 pg = sqrt(3)/3.
 strain6 = np.zeros((6,1))
 stress6 = np.zeros((6,1))
+S = np.zeros((3,3))
 
 xi = np.array([[-pg, -pg],
                [ pg, -pg],
@@ -411,6 +412,16 @@ def FEPlane4(data):
         stress6[i,4] = 0.           # yz
         stress6[i,5] = 0.           # xz  
 
+
+        S[0,0] = stress3[0]
+        S[0,1] = stress3[2]
+        S[1,0] = stress3[2]
+        S[1,1] = stress3[1]
+
+        eigenvalues, eigenvectors = np.linalg.eig(S)
+ 
+        print(eigenvalues)
+        print(eigenvectors)
 
         # print(epsilon)
         # print(sigma/1e6)
