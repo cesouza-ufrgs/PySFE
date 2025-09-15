@@ -3,7 +3,7 @@
 
 from math import pi, pow, sqrt, atan, cos, sin, acos
 
-def tela_regua():
+def ruler():
     
     #print '************************************'
         

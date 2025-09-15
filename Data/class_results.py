@@ -24,9 +24,13 @@ class C_Results():
         
         self.u_gl = []
         
-        self.S = []
+        self.stress = []
         
-        self.strn = []
+        self.strain = []
+
+        self.mainstress = []
+
+        self.maindirs = []
         
         return
         
@@ -44,10 +48,9 @@ class C_Results():
         file_out_gmsh = path + '/' + filebase + '_gmsh.msh'
         
         
-        print (file_out_gmsh)
+        print(file_out_gmsh)
         
-        fout = open(file_out_gmsh, 'w')
-    
+        fout = open(file_out_gmsh, 'w')    
     
         fout.write('$MeshFormat\n')    
         fout.write('2.2 0 4\n')    
@@ -211,3 +214,71 @@ class C_Results():
             fout.write(linha+'\n')
       
         fout.write('$EndNodeData\n')  
+
+        '''
+        $ElementData
+        numStringTags(ASCII int)
+        stringTag(string) ...
+        numRealTags(ASCII int)
+        realTag(ASCII double) ...
+        numIntegerTags(ASCII int)
+        integerTag(ASCII int) ...
+        elementTag(int) value(double) ...
+        ...
+        $EndElementData
+        '''
+
+        fout.write('$ElementData\n')
+        fout.write('1\n')     # number-of-string-tags 
+        fout.write('\"Strain\"\n')   # name
+        fout.write('1\n')     # number-of-real-tags
+        fout.write('0.0\n')    # real - time value, por ex.
+        fout.write('3\n')    # number of integer tags
+        fout.write('1\n')
+        fout.write('9\n')
+        fout.write(str("%5d  \n" % n_e)) # number of elements with results
+        
+
+        for i in range(0, n_e):
+            
+            linha = str('%5d  ' % (elements[i].id))
+            linha += str('%15.9f '  % self.strain[i][0])   #xx    
+            linha += str('%15.9f '  % self.strain[i][3])   #xy   
+            linha += str('%15.9f '  % self.strain[i][5])   #xz
+            linha += str('%15.9f '  % self.strain[i][3])   #yx
+            linha += str('%15.9f '  % self.strain[i][1])   #yy
+            linha += str('%15.9f '  % self.strain[i][4])   #yz
+            linha += str('%15.9f '  % self.strain[i][5])   #zx
+            linha += str('%15.9f '  % self.strain[i][4])   #zy
+            linha += str('%15.9f '  % self.strain[i][2])   #zz 
+            fout.write(linha+'\n')
+      
+        fout.write('$EndElementData\n')  
+
+
+        fout.write('$ElementData\n')
+        fout.write('1\n')     # number-of-string-tags 
+        fout.write('\"S\"\n')   # name
+        fout.write('1\n')     # number-of-real-tags
+        fout.write('0.0\n')    # real - time value, por ex.
+        fout.write('3\n')    # number of integer tags
+        fout.write('1\n')
+        fout.write('9\n')
+        fout.write(str("%5d  \n" % n_e)) # number of elements with results
+        
+
+        for i in range(0, n_e):
+            
+            linha = str('%5d  ' % (elements[i].id))
+            linha += str('%15.9f '  % self.stress[i][0])   #xx        
+            linha += str('%15.9f '  % self.stress[i][3])   #xy       
+            linha += str('%15.9f '  % self.stress[i][5])   #xz   
+            linha += str('%15.9f '  % self.stress[i][3])   #yx   
+            linha += str('%15.9f '  % self.stress[i][1])   #yy   
+            linha += str('%15.9f '  % self.stress[i][4])   #yz  
+            linha += str('%15.9f '  % self.stress[i][5])   #zx   
+            linha += str('%15.9f '  % self.stress[i][4])   #zy   
+            linha += str('%15.9f '  % self.stress[i][2])   #zz 
+            fout.write(linha+'\n')
+      
+        fout.write('$EndElementData\n')  

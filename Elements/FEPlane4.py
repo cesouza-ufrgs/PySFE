@@ -35,20 +35,25 @@ from math import sqrt #, pi, cos, sin, sqrt,
 
 # classes locais -------------
 from Data.class_data   import *
-from Util.utilities import align_header
+from Util.utilities import align_header, ruler
 from math import atan2
 
 from Data.class_results import *
  
 
+"""
+Define matrices globally, to avoid reallocation
+"""
+X = np.zeros((4,2))
 dXdx = np.zeros((2,2))
 phi  = np.zeros((4,1))
 dphidxi = np.zeros((4,2))
 u_e = np.zeros((8,1))
-
 weight =  [1., 1., 1., 1.]     
 B = np.zeros((3,8))
 pg = sqrt(3)/3.
+strain6 = np.zeros((6,1))
+stress6 = np.zeros((6,1))
 
 xi = np.array([[-pg, -pg],
                [ pg, -pg],
@@ -100,8 +105,6 @@ def update_B_plane4(dXdx):
     B[2,7] = B[0,6]     
     
 
-
-
 def compute_K_plane4(X,e,E,nu):
     """
     Computes the stiffness matrix for the plane4 element
@@ -110,30 +113,24 @@ def compute_K_plane4(X,e,E,nu):
     """
     # gaus points coordinates
 
-    
-
-    K_e = np.zeros((8,8));
+    K_e = np.zeros((8,8))
    
     C = np.matrix([ [ 1.,   nu,   0.],
                     [ nu,   1.,   0. ],
                     [ 0.,   0.,   (1.-nu)/2.]])
    
     C *= E /(1.-nu*nu) 
-                       
-    print('Constitutive matrix')    
-    print(C)                  
-
-    
+                           
     
    
     for i_g in range(0,n_gauss):
     
-        print('gauss point')
-        print(xi[i_g,:])
+        # print('gauss point')
+        #  print(xi[i_g,:])
         # update phi and dphidxi
         compute_gauss(xi[i_g,0],xi[i_g,1]  )
 
-        print(dphidxi)
+        # print(dphidxi)
 
         # compute dXdx - deformation gradient
         dXdx[0,0] = np.dot(dphidxi[:,0], X[:,0])
@@ -143,20 +140,15 @@ def compute_K_plane4(X,e,E,nu):
 
         # jacobian
         Jac = np.linalg.det(dXdx)
-
-        print('F\n',dXdx)
-        print('Jacobian', Jac)
-
+ 
         update_B_plane4(dXdx)
-        print(B)
 
         CB = np.dot(C,  B)
         BT = B.transpose()
-        print('cb\n',CB)
-        #print('bt\n',BT)
+        
         K_e += e * weight[i_g] * Jac * np.dot(BT,CB) 
         
-    print('K_e computed\n', K_e)
+    # print('K_e computed\n', K_e)
     
     return K_e
 #---------------------------------------------------------------    
@@ -171,25 +163,20 @@ def compute_K_plane4(X,e,E,nu):
 
 def FEPlane4(data):
     
-    
-    print ('* * * * ')
-    print ('\n*************************************\n')
+    ruler()
     print ('computing static finite element        ') 
     print ('solution using a 2d - 4n plane element ')
-    print ('\n*************************************\n')
+    ruler()
     
     total_dof = data.ndof * data.n_nodes
     
-    print ('loop on  elements')
+    # print ('loop on  elements')
     
     K_gl = np.zeros((total_dof,total_dof))
 
-
-    X = np.zeros((4,2))
-
  
     for i in range (0,data.n_elem):
-        print('element', i)
+        # print('element', i)
         
         n1 = data.elements[i].nodes[0]
         n2 = data.elements[i].nodes[1]
@@ -270,7 +257,7 @@ def FEPlane4(data):
         
     #print K_gl    
     #--- apply boundary cc
-    print ('apply boundary condition')
+    # print ('apply boundary condition')
     for bc in data.bconditions:
         
         dofbc =  (bc.id -1)*data.ndof + bc.dir -1;
@@ -280,7 +267,7 @@ def FEPlane4(data):
         K_gl[dofbc,dofbc  ] = 1
         
     #--- force vector
-    print ('assemble the force vector')
+    # print ('assemble the force vector')
     f_gl = np.zeros((total_dof,1))
     
     for force in data.forces:
@@ -293,23 +280,25 @@ def FEPlane4(data):
     #print K_gl  
     #print f_gl  
     
-    print ('solve the linear system, K.q = f')
+    # print ('solve the linear system, K.q = f')
     u_gl =  solve(K_gl, f_gl)
     
-    print(u_gl)
+    # print(u_gl)
 
-    print('Solution obtained!')
+    # print('Solution obtained!')
     
     #-------------------------
     #--- pos-processing
     u_nodal  = np.zeros((data.n_nodes,2))   
+    strain6 = np.zeros((data.n_elem,6))
+    stress6 = np.zeros((data.n_elem,6))
     
     
-    print(' Displacement results:')
+    # print(' Displacement results:')
     header = 'i'.rjust(4) + '|'
     header+= align_header('u_1',13)
     header+= align_header('u_2',13)
-    print( header) 
+ 
           
     for i in range(0,data.n_nodes):
     
@@ -323,7 +312,7 @@ def FEPlane4(data):
         outline+= '%12.8f |' % u_nodal[i,0]
         outline+= '%12.8f |' % u_nodal[i,1]
     
-        print (outline)
+        # print (outline)
     
     
     
@@ -331,16 +320,20 @@ def FEPlane4(data):
     #sigma   = np.zeros((data.n_elem,3))
     #s_vm    = np.zeros((data.n_elem,1))
     
-    Results = C_Results()
     print(' Strain and stress results (need to correct it!):')
+
+
+    Results = C_Results()
+    Results.strain = []
+    Results.stress = []
     header = 'i'.rjust(4) + '|'
     header+= align_header('Le',13)
     header+= align_header('Lef',13)
     header+= align_header('epsilon',13)
     header+= align_header('sigma',13)
-    print( header) 
+    # print( header) 
     for i in range (0,data.n_elem):
-        print('element', i)
+        # print('element', i)
          
         n1 = data.elements[i].nodes[0]
         n2 = data.elements[i].nodes[1]
@@ -360,8 +353,7 @@ def FEPlane4(data):
         # material
         i_mat = data.sections[i_prop-1].imat
         E  = data.materials[i_mat-1].E
-        nu = data.materials[i_mat-1].nu        
-        
+        nu = data.materials[i_mat-1].nu  
    
         C = np.matrix([ [ 1.,   nu,   0.],
                         [ nu,   1.,   0. ],
@@ -370,13 +362,15 @@ def FEPlane4(data):
         C *= E /(1.-nu*nu) 
                         
          
+        compute_gauss(0.,0.)
+
+
         # compute dXdx - deformation gradient
         dXdx[0,0] = np.dot(dphidxi[:,0], X[:,0])
         dXdx[0,1] = np.dot(dphidxi[:,1], X[:,0])
         dXdx[1,0] = np.dot(dphidxi[:,0], X[:,1])
         dXdx[1,1] = np.dot(dphidxi[:,1], X[:,1])
 
-     
         update_B_plane4(dXdx)
         
         # u element
@@ -395,27 +389,40 @@ def FEPlane4(data):
         u_e [4:6,0] = u_gl[i3_i:i3_f+1,0];
         u_e [6:8,0] = u_gl[i4_i:i4_f+1,0];
         
-        epsilon = np.dot(B,u_e)
-        
-        sigma = np.dot(C , epsilon)
 
-        print(epsilon)
-        print(sigma/1e6)
+        strain3 = np.dot(B,u_e)
+
+        stress3 = np.dot(C , strain3)
+
+        strain33 = -nu/E*(stress3[0]+stress3[1])
+
+
+        strain6[i,0] = strain3[0]   # xx
+        strain6[i,1] = strain3[1]   # yy
+        strain6[i,2] = strain33     # zz 
+        strain6[i,3] = strain3[2]   # xy
+        strain6[i,4] = 0.           # yz
+        strain6[i,5] = 0.           # xz  
+
+        stress6[i,0] = stress3[0]   # xx
+        stress6[i,1] = stress3[1]   # yy
+        stress6[i,2] = 0.0          # zz 
+        stress6[i,3] = stress3[2]   # xy
+        stress6[i,4] = 0.           # yz
+        stress6[i,5] = 0.           # xz  
+
+
+        # print(epsilon)
+        # print(sigma/1e6)
         
-        Results.strn.append(epsilon)
+        Results.strain = strain6
         
-        Results.S.append(sigma/1e6)
+        Results.stress = stress6
         
          
-        outline = '%3d |' % data.elements[i].id
-        for ep in epsilon:
-            outline+= '%12.8f |' % ep
-        for si in sigma:
-            outline+= '%12.8f |' % (si/1.e6)
-        
     
-        print (outline)
     
+    print(Results.stress) 
     
     Results.u_global = u_nodal
     

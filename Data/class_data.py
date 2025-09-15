@@ -8,6 +8,7 @@
  
 import  os, math
 import numpy as np
+from Util.utilities import align_header, ruler
 
 def extrai_comando(linha):
     '''
@@ -336,13 +337,13 @@ class C_Data():
                         read_elements = False
                     else:                         
                         elem = C_Elements()                       
-                             
-                        elem.id   =   int(cmds[0])
-                        elem.prop =   int(cmds[1])
                         
-                        n_nodes = len(cmds)-2
+                        elem.prop =   1     
+                        elem.id   =   int(cmds[0])
+
+                        n_nodes = len(cmds)-1
                                                 
-                        for i in range(2,n_nodes+2):
+                        for i in range(1,n_nodes+1):
                             elem.nodes.append(int(cmds[i]))
                         
                         self.elements.append(elem)  
@@ -390,7 +391,7 @@ class C_Data():
                 #-----    read sections
                 if read_section2d:
 
-                    print('reading section2d for plane elements ')
+                    # print('reading section2d for plane elements ')
                     
                     cmds = le_comando(in_line)
                         
@@ -496,8 +497,9 @@ class C_Data():
                     
         #--- verifying stuff            
         #mensagens:
-        print ('* * * * * * * * * * * *')
+        
         print ('Reading completed.')
+        ruler()
         
         
         self.n_nodes = len(self.nodes)
@@ -507,7 +509,7 @@ class C_Data():
         self.n_forces = len(self.forces)
         self.n_bconditions = len(self.bconditions)
         
-        show_log = True           
+        show_log = False
         
         if show_log:
             print ('Log:')
@@ -540,5 +542,5 @@ class C_Data():
         #--------------
 
         print ('---- end of reading')
-        print ('_______________________________________________')
+        ruler()
         return

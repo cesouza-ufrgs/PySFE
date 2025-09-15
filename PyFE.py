@@ -82,12 +82,12 @@ if __name__ == '__main__':
        
     """
     print ('\n\n\n')   
-    tela_regua()    
+    ruler()    
     print ('$                   PyFE                      $')  
-    print ('$                  v 19.04                    $') 
-    tela_regua()     
+    print ('$                  v 25.09.14                 $') 
+    ruler()     
     print ('$  a simplified finite element code           $')
-    tela_regua()
+    ruler()
     #print sys.argv
     
     ## number of command line arguments
@@ -101,11 +101,12 @@ if __name__ == '__main__':
         ## name of input data file.
         inputfile = sys.argv[1]  
                 
-        tela_regua()
-        print ('A FAZER: \n')
+        ruler()
+        print ('TO DO: \n')
+        print (' 25.09.12 - complete plane4')
         print (' 19.04.10 - everything')
         #desenha_grafico()                   
-        tela_regua()
+        ruler()
         
         
         # input data 
@@ -133,5 +134,4 @@ if __name__ == '__main__':
         print ('\n saindo \n ')
         print ('\n**********************************\n')
             
-
-    print ('\n**********************************\n')
+    ruler()
