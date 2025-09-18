@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": "models/trelica_bar2d_250904.dat"
+            "args": "models/plane/beam_500x50_250914_s4.dat"
         }
     ]
 }

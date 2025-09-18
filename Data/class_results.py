@@ -30,7 +30,9 @@ class C_Results():
 
         self.mainstress = []
 
-        self.maindirs = []
+        self.maindir1 = []
+        self.maindir2 = []
+        self.maindir3 = []
         
         return
         
@@ -38,9 +40,6 @@ class C_Results():
         '''
         funcao para salvar parametros calculados em um arquivo.    
         '''
-    
-        print ('arquivo input: ' +  path + ' \ ' + filebase)
-        #fi = open(arquivo_input, 'r');
        
         n_n = len(nodes)
         n_e = len(elements)
@@ -279,6 +278,70 @@ class C_Results():
             linha += str('%15.9f '  % self.stress[i][5])   #zx   
             linha += str('%15.9f '  % self.stress[i][4])   #zy   
             linha += str('%15.9f '  % self.stress[i][2])   #zz 
+            fout.write(linha+'\n')
+      
+        fout.write('$EndElementData\n')  
+
+
+        fout.write('$ElementData\n')
+        fout.write('1\n')     # number-of-string-tags 
+        fout.write('\"vec1\"\n')   # name
+        fout.write('1\n')     # number-of-real-tags
+        fout.write('0.0\n')    # real - time value, por ex.
+        fout.write('3\n')    # number of integer tags
+        fout.write('1\n')
+        fout.write('3\n')
+        fout.write(str("%5d  \n" % n_e)) # number of elements with results
+        
+
+        for i in range(0, n_e):
+            
+            linha = str('%5d  ' % (elements[i].id))
+            linha += str('%15.9f '  % self.mainvec1[i][0])   #xx        
+            linha += str('%15.9f '  % self.mainvec1[i][1])   #xy       
+            linha += str('%15.9f '  % self.mainvec1[i][2])   #xz    
+            fout.write(linha+'\n')
+      
+        fout.write('$EndElementData\n')  
+
+
+        fout.write('$ElementData\n')
+        fout.write('1\n')     # number-of-string-tags 
+        fout.write('\"vec2\"\n')   # name
+        fout.write('1\n')     # number-of-real-tags
+        fout.write('0.0\n')    # real - time value, por ex.
+        fout.write('3\n')    # number of integer tags
+        fout.write('1\n')
+        fout.write('3\n')
+        fout.write(str("%5d  \n" % n_e)) # number of elements with results
+        
+
+        for i in range(0, n_e):
+            
+            linha = str('%5d  ' % (elements[i].id))
+            linha += str('%15.9f '  % self.mainvec2[i][0])   #xx        
+            linha += str('%15.9f '  % self.mainvec2[i][1])   #xy       
+            linha += str('%15.9f '  % self.mainvec2[i][2])   #xz    
+            fout.write(linha+'\n')
+      
+        fout.write('$EndElementData\n')  
+        fout.write('$ElementData\n')
+        fout.write('1\n')     # number-of-string-tags 
+        fout.write('\"vec3\"\n')   # name
+        fout.write('1\n')     # number-of-real-tags
+        fout.write('0.0\n')    # real - time value, por ex.
+        fout.write('3\n')    # number of integer tags
+        fout.write('1\n')
+        fout.write('3\n')
+        fout.write(str("%5d  \n" % n_e)) # number of elements with results
+        
+
+        for i in range(0, n_e):
+            
+            linha = str('%5d  ' % (elements[i].id))
+            linha += str('%15.9f '  % self.mainvec3[i][0])   #xx        
+            linha += str('%15.9f '  % self.mainvec3[i][1])   #xy       
+            linha += str('%15.9f '  % self.mainvec3[i][2])   #xz    
             fout.write(linha+'\n')
       
         fout.write('$EndElementData\n')  

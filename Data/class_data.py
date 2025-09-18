@@ -170,11 +170,14 @@ class C_Sections():
 class C_Forces():
     
     def __init__(self):
+
         self.id = 0
         
         self.dir = 0
         
         self.A = 0.  
+
+
 #------------------------------------------------------------------------------- 
  
 class C_Data():
@@ -249,9 +252,8 @@ class C_Data():
         
         @param input_file - caminho para o input_file de dados.
         '''
-        
-        print ('_______________________________________________')
-        print ('---- Main reading - input')
+        ruler()
+        print ('        Parsing input file')
         
         # separa o nome do input_file
         (diretorio, nome) = os.path.split(input_file)
@@ -277,7 +279,7 @@ class C_Data():
             return
         
         
-        print ('opening  file ' +  input_file +  ' for reading')
+        print ('opening  file  for reading:\n' +  input_file )
         
           
         #--- inicia a leitura do input_file de dados
@@ -541,6 +543,6 @@ class C_Data():
         #self.v_ave = self.v_des / 1.4
         #--------------
 
-        print ('---- end of reading')
+        print ('           end of reading')
         ruler()
         return
